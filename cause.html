@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why You're My Best Friend! 💖</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="./cause.css">
+    <style>
+        body {
+            animation: pageEnter 0.8s ease;
+        }
+
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .music-indicator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        
+        .music-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff69b4, #da70d6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .music-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
+        }
+        
+        .music-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .music-text {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #ff69b4;
+            white-space: nowrap;
+            font-weight: 500;
+            animation: fadeInOut 2s ease-in-out infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <audio id="bgMusic" loop>
+        <source src="./song.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div class="music-indicator" id="musicIndicator">
+        <button class="music-btn" id="musicBtn">▶</button>
+        <span class="music-text">play me</span>
+    </div>
+    
+    <div class="custom-cursor">
+        <svg viewBox="0 0 24 24">
+            <path fill="#ff69b4" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+    </div>
+
+    <div class="container">
+        <h1>Happy Birthday My Little One 💖</h1>
+        
+        <div id="reasons-container"></div>
+        
+        <button class="shuffle-button">Click Here... 💕</button>
+        <div class="reason-counter"></div>
+
+        <div class="ending-section">
+            <div class="teddy-hug">
+                <img src="./a.JPG" alt="Teddy Hug">
+            </div>
+            <div class="ending-text">You're the BESTEST ! 💖</div>
+        </div>
+    </div>
+
+    <script src="cause.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bgMusic = document.getElementById('bgMusic');
+            const musicBtn = document.getElementById('musicBtn');
+            
+            bgMusic.volume = 0.3;
+            
+            // Restore playback time from localStorage
+            const savedTime = localStorage.getItem('musicTime');
+            const wasPlaying = localStorage.getItem('musicPlaying') === 'true';
+            
+            if (savedTime) {
+                bgMusic.currentTime = parseFloat(savedTime);
+            }
+            
+            // Try to play on first interaction
+            const playAudio = () => {
+                bgMusic.play().then(() => {
+                    musicBtn.textContent = '⏸';
+                }).catch(() => {
+                    console.log('Audio autoplay blocked');
+                });
+                document.removeEventListener('click', playAudio);
+                document.removeEventListener('scroll', playAudio);
+            };
+            
+            // Try to play immediately or resume
+            if (wasPlaying) {
+                bgMusic.play().catch(() => {
+                    document.addEventListener('click', playAudio);
+                    document.addEventListener('scroll', playAudio);
+                });
+            } else {
+                bgMusic.play().catch(() => {
+                    document.addEventListener('click', playAudio);
+                    document.addEventListener('scroll', playAudio);
+                });
+            }
+            
+            // Update button icon based on play/pause state
+            bgMusic.addEventListener('play', () => {
+                musicBtn.textContent = '⏸';
+                localStorage.setItem('musicPlaying', 'true');
+            });
+            
+            bgMusic.addEventListener('pause', () => {
+                musicBtn.textContent = '▶';
+                localStorage.setItem('musicPlaying', 'false');
+            });
+            
+            // Save playback time when leaving page
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem('musicTime', bgMusic.currentTime);
+                localStorage.setItem('musicPlaying', !bgMusic.paused);
+            });
+            
+            musicBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    musicBtn.textContent = '⏸';
+                } else {
+                    bgMusic.pause();
+                    musicBtn.textContent = '▶';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
